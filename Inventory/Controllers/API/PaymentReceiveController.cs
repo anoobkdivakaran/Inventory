@@ -1,0 +1,68 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Inventory.Data;
+using Inventory.Models;
+using Inventory.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Inventory.Areas.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PaymentReceiveController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly INumberSequence _numberSequence;
+
+        public PaymentReceiveController(ApplicationDbContext context,
+                        INumberSequence numberSequence)
+        {
+            _context = context;
+            _numberSequence = numberSequence;
+        }
+
+        // GET: api/PaymentReceive
+        [HttpGet]
+        public async Task<IActionResult> GetPaymentReceive()
+        {
+            List<PaymentReceive> Items = await _context.PaymentReceive.ToListAsync();
+            int Count = Items.Count();
+            return Ok(new { Items, Count });
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult Insert([FromBody]CrudViewModel<PaymentReceive> payload)
+        {
+            PaymentReceive paymentReceive = payload.value;
+            paymentReceive.PaymentReceiveName = _numberSequence.GetNumberSequence("PAYRCV");
+            _context.PaymentReceive.Add(paymentReceive);
+            _context.SaveChanges();
+            return Ok(paymentReceive);
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult Update([FromBody]CrudViewModel<PaymentReceive> payload)
+        {
+            PaymentReceive paymentReceive = payload.value;
+            _context.PaymentReceive.Update(paymentReceive);
+            _context.SaveChanges();
+            return Ok(paymentReceive);
+        }
+
+        [HttpPost("[action]")]
+        public IActionResult Remove([FromBody]CrudViewModel<PaymentReceive> payload)
+        {
+            PaymentReceive paymentReceive = _context.PaymentReceive
+                .Where(x => x.PaymentReceiveId == (int)payload.key)
+                .FirstOrDefault();
+            _context.PaymentReceive.Remove(paymentReceive);
+            _context.SaveChanges();
+            return Ok(paymentReceive);
+
+        }
+    }
+}
