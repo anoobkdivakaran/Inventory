@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Inventory.Data;
+using Inventory.Models;
 using Inventory.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Inventory.Models
+namespace Inventory.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PurchaseOrderController : ControllerBase
+    
+    
+    public class PurchaseOrderController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly INumberSequence _numberSequence;
