@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Customer";
 }
-
 <div class="row">
     <div class="col-md-12">
         <div class="card">
@@ -21,23 +20,23 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
-            var crudServiceBaseUrl = "https://demos.telerik.com/kendo-ui/service",
+            var crudServiceBaseUrl = "/api/Customer",
                 dataSource = new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: crudServiceBaseUrl + "/Products",
+                            url: crudServiceBaseUrl + "/GetCustomer",
                             dataType: "jsonp"
                         },
                         update: {
-                            url: crudServiceBaseUrl + "/Products/Update",
+                            url: crudServiceBaseUrl + "/Update",
                             dataType: "jsonp"
                         },
                         destroy: {
-                            url: crudServiceBaseUrl + "/Products/Destroy",
+                            url: crudServiceBaseUrl + "/Remove",
                             dataType: "jsonp"
                         },
                         create: {
-                            url: crudServiceBaseUrl + "/Products/Create",
+                            url: crudServiceBaseUrl + "/Insert",
                             dataType: "jsonp"
                         },
                         parameterMap: function (options, operation) {
@@ -52,11 +51,9 @@
                         model: {
                             id: "ProductID",
                             fields: {
-                                ProductID: { editable: false, nullable: true },
-                                ProductName: { validation: { required: true } },
-                                UnitPrice: { type: "number", validation: { required: true, min: 1 } },
-                                Discontinued: { type: "boolean" },
-                                UnitsInStock: { type: "number", validation: { min: 0, required: true } }
+                                CustomerId: { editable: false, nullable: true },
+                                CustomerName: { validation: { required: true } },
+                                //UnitPrice: { type: "number", validation: { required: true, min: 1 } },
                             }
                         }
                     }
@@ -71,13 +68,28 @@
                 height: 650,
                 toolbar: ["create", "search"],
                 columns: [
-                    { field: "ProductName", title: "Product Name" },
-                    { field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: "120px" },
-                    { field: "UnitsInStock", title: "Units In Stock", width: "120px" },
-                    { field: "Discontinued", width: "120px", editor: customBoolEditor },
+                    { field: "CustomerName", title: "Customer Name" },
+                    //{ field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: "120px" },
+                    { field: "Address", title: "Address", width: "120px" },
+                    { field: "City", title: "City", width: "120px" },
                     { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
                 editable: "popup"
             });
+            function categoryDropDownEditor(container, options) {
+                $('<input required name="' + options.field + '"/>')
+                    .appendTo(container)
+                    .kendoDropDownList({
+                        autoBind: false,
+                        dataTextField: "CustomerTypeName",
+                        dataValueField: "CustomerTypeId",
+                        dataSource: {
+                            type: "odata",
+                            transport: {
+                                read: "/api/CustomerType/GetCustomerType"
+                            }
+                        }
+                    });
+            }
         });
 
         function customBoolEditor(container, options) {
