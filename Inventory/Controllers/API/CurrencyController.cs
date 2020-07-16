@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Inventory.Areas.API.Controllers
+namespace Inventory.Controllers.API
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class CurrencyController : ControllerBase
     {
