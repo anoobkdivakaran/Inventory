@@ -218,7 +218,8 @@ TestResult.xml
 Version.cs
 Version.h
 Version.cpp
-.dll
-.pdb
-.cache
-.exe
+*.dll
+*.pdb
+*.cache
+*.exe
+*.suo
