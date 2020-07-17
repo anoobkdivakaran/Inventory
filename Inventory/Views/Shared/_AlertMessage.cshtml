@@ -1,8 +1,14 @@
-﻿@if (Convert.ToString(TempData["Alert"]) == "added" || Convert.ToString(TempData["Alert"]) == "Updated" || Convert.ToString(TempData["Alert"]) == "Removed")
+﻿@*@if (Convert.ToString(TempData["Alert"]) == "added" || Convert.ToString(TempData["Alert"]) == "Updated" || Convert.ToString(TempData["Alert"]) == "Removed")
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" id="success-alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <strong>Record has been successfully @TempData["Alert"].</strong>
     </div>
-    
-}
+
+    <script>
+        $("#success-alert").fadeTo(2000, 500).slideUp(500, function () {
+            $("#success-alert").slideUp(500);
+        });
+
+    </script>
+}*@

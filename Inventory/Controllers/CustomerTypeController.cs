@@ -33,11 +33,9 @@ namespace Inventory.Controllers
 
         public IActionResult Insert(string models)
         {
-
             CustomerType customerType = JsonConvert.DeserializeObject<List<CustomerType>>(models).FirstOrDefault();
             _context.CustomerType.Add(customerType);
             _context.SaveChanges();
-            TempData["Alert"] = "added";
             return Ok(customerType);
         }
 
@@ -47,7 +45,6 @@ namespace Inventory.Controllers
             CustomerType customerType = JsonConvert.DeserializeObject<List<CustomerType>>(models).FirstOrDefault();
             _context.CustomerType.Update(customerType);
             _context.SaveChanges();
-            TempData["Alert"] = "Updated";
             return Ok(customerType);
         }
 
@@ -58,7 +55,6 @@ namespace Inventory.Controllers
                 .FirstOrDefault();
             _context.CustomerType.Remove(customerType);
             _context.SaveChanges();
-            TempData["Alert"] = "Removed";
             return Ok(customerType);
 
         }
