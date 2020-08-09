@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Customer";
 }
 <div class="row">
@@ -17,6 +16,7 @@
         </div>
     </div>
 </div>
+
 @section Scripts{
     <script>
         $(document).ready(function () {
@@ -24,24 +24,54 @@
                 dataSource = new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: crudServiceBaseUrl + "/Get",
+                            url: crudServiceBaseUrl + "/GetData",
                             dataType: "json"
                         },
                         update: {
                             url: crudServiceBaseUrl + "/Update",
-                            dataType: "jsonp"
+                            dataType: "json"
                         },
                         destroy: {
                             url: crudServiceBaseUrl + "/Remove",
-                            dataType: "jsonp"
+                            dataType: "json"
                         },
                         create: {
                             url: crudServiceBaseUrl + "/Insert",
-                            dataType: "jsonp"
+                            dataType: "json"
                         },
                         parameterMap: function (options, operation) {
                             if (operation !== "read" && options.models) {
                                 return { models: kendo.stringify(options.models) };
+                            }
+                        }
+                    },
+                    requestEnd: function (e) {
+                        if (e.response) {
+                            if ((e.type === "create")) {
+                                $.notify({
+                                    message: 'Record has been successfully added',
+                                }, {
+                                        type: 'success',
+                                        allow_dismiss: false
+                                    })
+                            }
+                            if ((e.type === "destroy")) {
+                                $.notify({
+                                    message: 'Record has been successfully deleted',
+
+                                }, {
+                                        type: 'success',
+                                        allow_dismiss: false
+                                    })
+                            }
+                            if ((e.type === "update")) {
+                                $.notify({
+                                    message: 'Record has been successfully updated',
+
+                                }, {
+                                        type: 'success',
+                                        allow_dismiss: false,
+                                    })
                             }
                         }
                     },
@@ -51,10 +81,17 @@
                         model: {
                             id: "customerId",
                             fields: {
-                                customerId: { editable: false, nullable: true },
+                                customerId: { editable: false, nullable: false, defaultValue: 0 },
                                 customerName: { validation: { required: true } },
-                                city: { validation: { required: true } },
-                                //UnitPrice: { type: "number", validation: { required: true, min: 1 } },
+                                customerType: { defaultValue: { customerTypeId: 1, customerTypeName: "Default" } },
+                                address: { validation: { required: true } },
+                                phone: { validation: { required: false } },
+                                city: { validation: { required: false } },
+                                state: { validation: { required: false } },
+                                zipCode: { validation: { required: false } },
+                                email: { validation: { required: false } },
+                                contactPerson: { validation: { required: false } },
+
                             }
                         }
                     }
@@ -63,38 +100,45 @@
             $("#Customer").kendoGrid({
                 dataSource: dataSource,
                 pageable: true,
-                //filterable: true,
                 resizable: true,
                 sortable: true,
                 height: 650,
                 toolbar: ["create", "search"],
                 columns: [
-                    { field: "customerName", title: "Customer Name" },
-                    //{ field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: "120px" },
-                    { field: "address", title: "Address", width: "120px" },
-                    { field: "city", title: "City", width: "120px" },
+                    { field: "customerName", title: "Customer", width: "200px" },
+                    { field: "customerType", title: "Customer Type", width: "180px", editor: dropDownEditor, template: "#=customerType.customerTypeName#" },
+                    { field: "address", title: "Address", width: "250px" },
+                    { field: "phone", title: "Phone", width: "150px" },
+                    { field: "city", title: "City", width: "150px" },
+                    { field: "state", title: "State", width: "150px" },
+                    { field: "zipCode", title: "Zip", width: "150px" },
+                    { field: "email", title: "Email Address", width: "150px" },
+                    { field: "contactPerson", title: "Contact Person", width: "150px", },
                     { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
                 editable: "popup"
             });
-            function categoryDropDownEditor(container, options) {
+
+            function dropDownEditor(container, options) {
+                debugger
                 $('<input required name="' + options.field + '"/>')
                     .appendTo(container)
                     .kendoDropDownList({
                         autoBind: false,
-                        dataTextField: "CustomerTypeName",
-                        dataValueField: "CustomerTypeId",
+                        dataTextField: "customerTypeName",
+                        dataValueField: "customerTypeId",
                         dataSource: {
-                            type: "odata",
+                            type: "json",
                             transport: {
-                                read: "/api/CustomerType/GetCustomerType"
+                                read: "/CustomerType/GetData"
                             }
                         }
                     });
+
             }
+
         });
 
-        function customBoolEditor(container, options) {
-            $('<input class="k-checkbox" type="checkbox" name="Discontinued" data-type="boolean" data-bind="checked:Discontinued">').appendTo(container);
-        }
     </script>
 }
+
+

@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Inventory.Data;
+using Inventory.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Inventory.Data;
-using Inventory.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.Controllers
 {
@@ -20,42 +18,53 @@ namespace Inventory.Controllers
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
+        // GET: api/CustomerController
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetData()
         {
-            List<Customer> Items = await _context.Customer.ToListAsync();
-            int Count = Items.Count();
+            var customerType = await _context.CustomerType.ToListAsync().ConfigureAwait(false);
+            var customer = await _context.Customer.ToListAsync().ConfigureAwait(false);
+            Customer customerModel = new Customer();
+            List<Customer> Items = new List<Customer>();
+            foreach (var item in customer)
+            {
+                customerModel = item;
+                customerModel.CustomerType = customerType.Find(f => f.CustomerTypeId == item.CustomerTypeId);
+                Items.Add(customerModel);
+            }
             return Json(Items);
         }
 
-
-        [HttpPost("[action]")]
-        public IActionResult Insert([FromBody]CrudViewModel<Customer> payload)
+        public IActionResult Insert(string models)
         {
-            Customer customer = payload.value;
+            Customer customer = JsonConvert.DeserializeObject<List<Customer>>(models).FirstOrDefault();
+            customer.CustomerTypeId = customer.CustomerType.CustomerTypeId;
             _context.Customer.Add(customer);
             _context.SaveChanges();
             return Ok(customer);
         }
 
-        [HttpPost("[action]")]
-        public IActionResult Update([FromBody]CrudViewModel<Customer> payload)
+
+        public IActionResult Update(string models)
         {
-            Customer customer = payload.value;
+            Customer customer = JsonConvert.DeserializeObject<List<Customer>>(models).FirstOrDefault();
+            customer.CustomerTypeId = customer.CustomerType.CustomerTypeId;
             _context.Customer.Update(customer);
             _context.SaveChanges();
             return Ok(customer);
         }
 
-        [HttpPost("[action]")]
-        public IActionResult Remove([FromBody]CrudViewModel<Customer> payload)
+        public IActionResult Remove(string models)
         {
+            var CustomerId = JsonConvert.DeserializeObject<List<Customer>>(models).FirstOrDefault()?.CustomerId ?? 0;
             Customer customer = _context.Customer
-                .Where(x => x.CustomerId == (int)payload.key)
+                .Where(x => x.CustomerId == CustomerId)
                 .FirstOrDefault();
             _context.Customer.Remove(customer);
             _context.SaveChanges();

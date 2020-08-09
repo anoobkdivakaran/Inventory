@@ -27,7 +27,7 @@ namespace Inventory.Controllers
         [HttpGet]
         public async Task<IActionResult> GetData()
         {
-            List<CustomerType> Items = await _context.CustomerType.ToListAsync();
+            List<CustomerType> Items = await _context.CustomerType.ToListAsync().ConfigureAwait(false);
             return Json(Items);
         }
 
@@ -50,8 +50,9 @@ namespace Inventory.Controllers
 
         public IActionResult Remove(string models)
         {
+            var CustomerTypeId = JsonConvert.DeserializeObject<List<CustomerType>>(models).FirstOrDefault()?.CustomerTypeId ?? 0;
             CustomerType customerType = _context.CustomerType
-                .Where(x => x.CustomerTypeId == JsonConvert.DeserializeObject<List<CustomerType>>(models).FirstOrDefault().CustomerTypeId)
+                .Where(x => x.CustomerTypeId == CustomerTypeId)
                 .FirstOrDefault();
             _context.CustomerType.Remove(customerType);
             _context.SaveChanges();
