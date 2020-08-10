@@ -106,20 +106,28 @@
                 toolbar: ["create", "search"],
                 columns: [
                     { field: "customerName", title: "Customer", width: "200px" },
-                    { field: "customerType", title: "Customer Type", width: "180px", editor: dropDownEditor, template: "#=customerType.customerTypeName#" },
-                    { field: "address", title: "Address", width: "250px" },
+                    {
+                        field: "customerType", title: "Customer Type", width: "180px",
+                        editor: dropDownEditor, template: "#=customerType.customerTypeName#"
+                    },
+                    {
+                        field: "address", title: "Address", width: "250px",
+                        editor: function (container, options) {
+                            $('<textarea data-text-field="Label" data-value-field="Value" data-bind="value:' + options.field + '" style="width: 260px;height:' + (container.height() - 12) + 'px" />')
+                                .appendTo(container);
+                        }
+                    },
                     { field: "phone", title: "Phone", width: "150px" },
-                    { field: "city", title: "City", width: "150px" },
-                    { field: "state", title: "State", width: "150px" },
-                    { field: "zipCode", title: "Zip", width: "150px" },
-                    { field: "email", title: "Email Address", width: "150px" },
-                    { field: "contactPerson", title: "Contact Person", width: "150px", },
+                    { field: "city", title: "City", width: "150px", hidden: true },
+                    { field: "state", title: "State", width: "150px", hidden: true },
+                    { field: "zipCode", title: "Zip", width: "150px", hidden: true },
+                    { field: "email", title: "Email Address", width: "150px", hidden: true },
+                    { field: "contactPerson", title: "Contact Person", width: "150px", hidden: true },
                     { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }],
                 editable: "popup"
             });
 
             function dropDownEditor(container, options) {
-                debugger
                 $('<input required name="' + options.field + '"/>')
                     .appendTo(container)
                     .kendoDropDownList({
